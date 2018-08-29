@@ -4,14 +4,52 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <h2>Welcome to Ionicccccccccccccc!</h2>
-  <p>
-    Thisssssssss starter project comes with simple tabs-based layout for apps
-    that are going to primarily use a Tabbed UI.
-  </p>
-  <p>
-    Take a look at the <code>src/pages/</code> directory to add or change tabs,
-    update any existing page or create new pages.
-  </p>
+<ion-content padding-horizontal class="dark-image-bg">
+  <form [formGroup]="eventForm" (ngSubmit)="create()">
+    <ion-list margin-top class="dark-input">
+      <ion-item class="datetime-custom">
+        <ion-label>
+          <ion-icon name="calendar"></ion-icon> Start Date:
+        </ion-label>
+        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventStartDate" min="2000" max="2050" color="dark"></ion-datetime>
+      </ion-item>
+      <ion-item class="datetime-custom">
+        <ion-label>
+          <ion-icon name="calendar"></ion-icon> End Date:
+        </ion-label>
+        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventEndDate" min="2000" max="2050" color="dark"></ion-datetime>
+      </ion-item>
+      <ion-item id="timeStart" class="datetime-custom">
+        <ion-label>
+          <ion-icon name="time"></ion-icon> Start Time:
+        </ion-label>
+        <ion-datetime displayFormat="h:mm A" formControlName="pickEventStartTime"></ion-datetime>
+      </ion-item>
+      <ion-item id="timeFinish" class="datetime-custom">
+        <ion-label>
+          <ion-icon name="time"></ion-icon> End Time:
+        </ion-label>
+        <ion-datetime displayFormat="h:mm A" formControlName="pickEventFinishTime"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <ion-icon name="pin"></ion-icon> Address:
+        </ion-label>
+        <ion-input type="text" formControlName="address"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>
+          <ion-icon name="logo-buffer"></ion-icon> Proximity:
+        </ion-label>
+        <ion-input type="text" formControlName="proximity"></ion-input>
+      </ion-item>
+
+      <ion-item margin-bottom>
+          <button ion-button color="primary" type="submit"
+             text-center
+             block
+             [disabled]="!eventForm.valid">Create Event</button>
+       </ion-item>
+    </ion-list>
+  </form>
 </ion-content>
