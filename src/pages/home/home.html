@@ -35,8 +35,11 @@
         <ion-label>
           <ion-icon name="pin"></ion-icon> Address:
         </ion-label>
-        <ion-input type="text" formControlName="address"></ion-input>
+        <ion-input type="text" formControlName="address" [(ngModel)]="query" (input)="searchPlace()"></ion-input>
       </ion-item>
+      <ion-list>
+        <ion-item *ngFor="let place of places" (touchstart)="selectPlace(place)">{{place.description}}</ion-item>
+      </ion-list>
       <ion-item>
         <ion-label>
           <ion-icon name="logo-buffer"></ion-icon> Proximity:
@@ -45,11 +48,8 @@
       </ion-item>
 
       <ion-item margin-bottom>
-          <button ion-button color="primary" type="submit"
-             text-center
-             block
-             [disabled]="!eventForm.valid">Create Event</button>
-       </ion-item>
+        <button ion-button color="primary" type="submit" text-center block [disabled]="!eventForm.valid">Create Event</button>
+      </ion-item>
     </ion-list>
   </form>
 </ion-content>

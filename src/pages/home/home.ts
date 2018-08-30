@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Events } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @Component({
   selector: 'page-home',
@@ -12,7 +13,14 @@ export class HomePage {
   private eventForm: FormGroup;
   private eventDuration = false;
 
-  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, private toastCtrl: ToastController) {
+  query: string = '';
+  places: any = [];
+  autocompleteService: any;
+  //placesService: any;
+
+  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, private toastCtrl: ToastController,
+    private geolocation: Geolocation) {
+    //google places api key: AIzaSyCaPTxflgChk2KXjvlvXp70PBYftr5bCXc
     //console.log('const')
     this.eventForm = this.formBuilder.group({
       pickEventStartDate: ['', Validators.required],
@@ -26,7 +34,7 @@ export class HomePage {
     events.subscribe('event:created', (eventDuration, time) => {
       // user and time are the same arguments passed in `events.publish(user, time)`
       console.log('Event is created:', eventDuration, 'at', new Date(time));
-      this.presentToast('Event is created at '+ new Date(time))
+      this.presentToast('Event is created at ' + new Date(time))
     });
   }
 
@@ -52,9 +60,15 @@ export class HomePage {
     }
   }
 
-  // ngOnInit(){
-  //   console.log('init')
-  // }
+  ngOnInit() {
+    //console.log('init')
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
+    }).catch((error) => {
+      console.log('Error getting location', error);
+    });
+  }
 
   create() {
     //console.log(this.pickEventStartDate, this.pickEventEndDate, this.pickEventStartTime, this.pickEventFinishTime, this.address, this.proximity);
@@ -62,6 +76,13 @@ export class HomePage {
     this.eventDuration = true;
 
     this.events.publish('event:created', this.eventDuration, Date.now());
+
+    let watch = this.geolocation.watchPosition();
+    watch.subscribe((data) => {
+      // data can be a set of coordinates, or an error (if an error occurred).
+      console.log(data.coords.latitude)
+      console.log(data.coords.longitude)
+    });
   }
 
   presentToast(m) {
@@ -70,11 +91,35 @@ export class HomePage {
       duration: 3000,
       position: 'top'
     });
-  
+
     toast.onDidDismiss(() => {
       console.log('Dismissed toast');
     });
-  
+
     toast.present();
+  }
+
+  searchPlace(){   
+    this.autocompleteService = new google.maps.places.AutocompleteService();
+    //this.placesService = new google.maps.places.PlacesService(this.maps.map);
+    console.log('1')
+    if(this.query.length > 0) {
+        let config = {
+            types: ['geocode'],
+            input: this.query
+        }
+        console.log('2')
+        this.autocompleteService.getPlacePredictions(config, (predictions, status) => {
+            if(status == google.maps.places.PlacesServiceStatus.OK && predictions){
+              console.log('3', predictions)
+                this.places = [];
+                predictions.forEach((prediction) => {
+                    this.places.push(prediction);
+                });
+            }
+        });
+    } else {
+        this.places = [];
+    }
   }
 }

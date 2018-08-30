@@ -11,7 +11,8 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-import {DatePicker} from '@ionic-native/date-picker';
+//import { DatePicker } from '@ionic-native/date-picker';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @NgModule({
   declarations: [
@@ -36,8 +37,9 @@ import {DatePicker} from '@ionic-native/date-picker';
   providers: [
     StatusBar,
     SplashScreen,
-    DatePicker,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    //DatePicker,
+    Geolocation,
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
+export class AppModule { }
