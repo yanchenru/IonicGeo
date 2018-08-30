@@ -13,10 +13,12 @@ export class HomePage {
   private eventForm: FormGroup;
   private eventDuration = false;
 
+  map: any;
+  mapElement: any;
   query: string = '';
   places: any = [];
   autocompleteService: any;
-  //placesService: any;
+  placesService: any;
 
   constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, private toastCtrl: ToastController,
     private geolocation: Geolocation) {
@@ -60,11 +62,17 @@ export class HomePage {
     }
   }
 
-  ngOnInit() {
+  ionViewDidLoad() {
     //console.log('init')
-    this.geolocation.getCurrentPosition().then((resp) => {
-      // resp.coords.latitude
-      // resp.coords.longitude
+    this.geolocation.getCurrentPosition().then((position) => {
+      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      let mapOptions = {
+        center: latLng,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+
+      this.map = new google.maps.Map(this.mapElement, mapOptions);
     }).catch((error) => {
       console.log('Error getting location', error);
     });
@@ -99,27 +107,45 @@ export class HomePage {
     toast.present();
   }
 
-  searchPlace(){   
+  searchPlace() {
     this.autocompleteService = new google.maps.places.AutocompleteService();
-    //this.placesService = new google.maps.places.PlacesService(this.maps.map);
-    console.log('1')
-    if(this.query.length > 0) {
-        let config = {
-            types: ['geocode'],
-            input: this.query
+    //console.log('1')
+    if (this.query.length > 0) {
+      let config = {
+        types: ['geocode'],
+        input: this.query
+      }
+      //console.log('2')
+      this.autocompleteService.getPlacePredictions(config, (predictions, status) => {
+        if (status == google.maps.places.PlacesServiceStatus.OK && predictions) {
+          //console.log('3', predictions)
+          this.places = [];
+          predictions.forEach((prediction) => {
+            this.places.push(prediction);
+          });
         }
-        console.log('2')
-        this.autocompleteService.getPlacePredictions(config, (predictions, status) => {
-            if(status == google.maps.places.PlacesServiceStatus.OK && predictions){
-              console.log('3', predictions)
-                this.places = [];
-                predictions.forEach((prediction) => {
-                    this.places.push(prediction);
-                });
-            }
-        });
+      });
     } else {
-        this.places = [];
+      this.places = [];
     }
+  }
+
+  selectPlace(place) {
+    this.placesService = new google.maps.places.PlacesService(this.map);
+
+    this.places = [];
+
+    let location = {
+      lat: null,
+      lng: null,
+      name: place.name
+    };
+
+    this.placesService.getDetails({ placeId: place.place_id }, (details) => {
+      location.name = details.name;
+      location.lat = details.geometry.location.lat();
+      location.lng = details.geometry.location.lng();
+      console.log(details)
+    });
   }
 }
