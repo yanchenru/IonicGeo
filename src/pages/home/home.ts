@@ -17,6 +17,11 @@ export class HomePage {
   mapElement: any;
   query: string = '';
   places: any = [];
+  location = {
+    lat: null,
+    lng: null,
+    name: null
+  };
   autocompleteService: any;
   placesService: any;
 
@@ -30,7 +35,7 @@ export class HomePage {
       pickEventStartTime: ['', Validators.required],
       pickEventFinishTime: ['', Validators.required],
       address: ['', Validators.required],
-      proximity: ['', Validators.required],
+      proximity: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]*$')])],
     }, { validator: this.dateLessThan("pickEventStartDate", "pickEventEndDate", "pickEventStartTime", "pickEventFinishTime") });
 
     events.subscribe('event:created', (eventDuration, time) => {
@@ -136,18 +141,14 @@ export class HomePage {
 
     this.places = [];
 
-    let location = {
-      lat: null,
-      lng: null,
-      name: place.name
-    };
-
     this.placesService.getDetails({ placeId: place.place_id }, (details) => {
-      location.name = details.name;
-      location.lat = details.geometry.location.lat();
-      location.lng = details.geometry.location.lng();
+      this.location.name = details.name;
+      this.location.lat = details.geometry.location.lat();
+      this.location.lng = details.geometry.location.lng();
       console.log(details)
-      this.query = location.name;
+
+      this.query = this.location.name;
     });
   }
+
 }
