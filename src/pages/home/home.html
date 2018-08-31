@@ -38,7 +38,7 @@
         <ion-input type="text" formControlName="address" [(ngModel)]="query" (input)="searchPlace()"></ion-input>
       </ion-item>
       <ion-list>
-        <ion-item *ngFor="let place of places" (touchstart)="selectPlace(place)">{{place.description}}</ion-item>
+        <ion-item *ngFor="let place of places" (click)="selectPlace(place)">{{place.description}}</ion-item>
       </ion-list>
       <ion-item>
         <ion-label>
@@ -52,4 +52,6 @@
       </ion-item>
     </ion-list>
   </form>
+  
+  <div id="googleMap"></div>
 </ion-content>

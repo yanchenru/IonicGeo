@@ -72,7 +72,7 @@ export class HomePage {
         mapTypeId: google.maps.MapTypeId.ROADMAP
       }
 
-      this.map = new google.maps.Map(this.mapElement, mapOptions);
+      this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
     }).catch((error) => {
       console.log('Error getting location', error);
     });
@@ -88,8 +88,8 @@ export class HomePage {
     let watch = this.geolocation.watchPosition();
     watch.subscribe((data) => {
       // data can be a set of coordinates, or an error (if an error occurred).
-      console.log(data.coords.latitude)
-      console.log(data.coords.longitude)
+      // console.log(data.coords.latitude)
+      // console.log(data.coords.longitude)
     });
   }
 
@@ -131,6 +131,7 @@ export class HomePage {
   }
 
   selectPlace(place) {
+    console.log('select place')
     this.placesService = new google.maps.places.PlacesService(this.map);
 
     this.places = [];
@@ -146,6 +147,7 @@ export class HomePage {
       location.lat = details.geometry.location.lat();
       location.lng = details.geometry.location.lng();
       console.log(details)
+      this.query = location.name;
     });
   }
 }
