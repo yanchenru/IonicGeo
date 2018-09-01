@@ -13,6 +13,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 //import { DatePicker } from '@ionic-native/date-picker';
 import { Geolocation } from '@ionic-native/geolocation';
+import { Geofence } from '@ionic-native/geofence';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { Geolocation } from '@ionic-native/geolocation';
     SplashScreen,
     //DatePicker,
     Geolocation,
+    Geofence,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
