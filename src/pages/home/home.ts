@@ -29,8 +29,8 @@ export class HomePage {
   autocompleteService: any;
   placesService: any;
 
-  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, private toastCtrl: ToastController,
-    private geolocation: Geolocation, private geofence: Geofence) {
+  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, 
+    private toastCtrl: ToastController, private geolocation: Geolocation, private geofence: Geofence) {
 
     this.eventForm = this.formBuilder.group({
       pickEventStartDate: ['', Validators.required],
