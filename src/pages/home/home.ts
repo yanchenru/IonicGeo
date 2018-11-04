@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Events } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
-import { Geofence } from '@ionic-native/geofence';
 
 import firebase from 'firebase';
 
@@ -32,7 +31,7 @@ export class HomePage {
   placesService: any;
 
   constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder,
-    private toastCtrl: ToastController, private geolocation: Geolocation, private geofence: Geofence) {
+    private toastCtrl: ToastController, private geolocation: Geolocation) {
       
     this.eventForm = this.formBuilder.group({
       pickEventStartDate: ['', Validators.required],
@@ -47,12 +46,6 @@ export class HomePage {
       console.log('Event is created:', eventDuration, 'at', new Date(time));
       this.presentToast('Event is created at ' + new Date(time))
     });
-
-    geofence.initialize().then(
-      // resolved promise does not return a value
-      () => console.log('Geofence Plugin Ready'),
-      (err) => console.log(err)
-    )
   }
 
   dateLessThan(startDate: string, endDate: string, startTime: string, finishTime: string) {
@@ -103,11 +96,10 @@ export class HomePage {
       // console.log(data.coords.latitude)
       // console.log(data.coords.longitude)
     });
-
-    this.addGeofence(this.location.id, 1, this.location.lat, this.location.lng, this.location.name, this.location.description)
   
     //add event information to firebase
     firebase.database().ref('event/').push().set({
+      id: this.location.id,
       latitude: this.location.lat,
       longitude: this.location.lng,
       name : this.location.name,
@@ -115,7 +107,8 @@ export class HomePage {
       startDate: this.eventForm.value.pickEventStartDate,
       endDate: this.eventForm.value.pickEventEndDate,
       startTime: this.eventForm.value.pickEventStartTime,
-      endTime: this.eventForm.value.pickEventEndTime
+      endTime: this.eventForm.value.pickEventEndTime,
+      description: this.location.description
     });
   }
 
@@ -171,24 +164,4 @@ export class HomePage {
     });
   }
 
-  addGeofence(id, idx, lat, lng, place, desc) {
-    let fence = {
-      id: id,
-      latitude: lat,
-      longitude: lng,
-      radius: parseInt(this.eventForm.value.proximity),
-      transitionType: 3,
-      notification: {
-        id: idx,
-        title: 'You crossed ' + place,
-        text: desc,
-        openAppOnClick: true
-      }
-    }
-
-    this.geofence.addOrUpdate(fence).then(
-      () => console.log('Geofence added'),
-      (err) => console.log('Geofence failed to add')
-    );
-  }
 }
