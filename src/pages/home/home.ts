@@ -6,6 +6,8 @@ import { ToastController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Geofence } from '@ionic-native/geofence';
 
+import firebase from 'firebase';
+
 declare var google;
 @Component({
   selector: 'page-home',
@@ -29,17 +31,17 @@ export class HomePage {
   autocompleteService: any;
   placesService: any;
 
-  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder, 
+  constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder,
     private toastCtrl: ToastController, private geolocation: Geolocation, private geofence: Geofence) {
-
+      
     this.eventForm = this.formBuilder.group({
       pickEventStartDate: ['', Validators.required],
       pickEventEndDate: ['', Validators.required],
       pickEventStartTime: ['', Validators.required],
-      pickEventFinishTime: ['', Validators.required],
+      pickEventEndTime: ['', Validators.required],
       address: ['', Validators.required],
       proximity: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]*$')])],
-    }, { validator: this.dateLessThan("pickEventStartDate", "pickEventEndDate", "pickEventStartTime", "pickEventFinishTime") });
+    }, { validator: this.dateLessThan("pickEventStartDate", "pickEventEndDate", "pickEventStartTime", "pickEventEndTime") });
 
     events.subscribe('event:created', (eventDuration, time) => {
       console.log('Event is created:', eventDuration, 'at', new Date(time));
@@ -103,6 +105,18 @@ export class HomePage {
     });
 
     this.addGeofence(this.location.id, 1, this.location.lat, this.location.lng, this.location.name, this.location.description)
+  
+    //add event information to firebase
+    firebase.database().ref('event/').push().set({
+      latitude: this.location.lat,
+      longitude: this.location.lng,
+      name : this.location.name,
+      proximity: this.eventForm.value.proximity,
+      startDate: this.eventForm.value.pickEventStartDate,
+      endDate: this.eventForm.value.pickEventEndDate,
+      startTime: this.eventForm.value.pickEventStartTime,
+      endTime: this.eventForm.value.pickEventEndTime
+    });
   }
 
   presentToast(m) {
@@ -152,7 +166,7 @@ export class HomePage {
       this.location.lat = details.geometry.location.lat();
       this.location.lng = details.geometry.location.lng();
       this.location.description = details.formatted_address;
-     
+
       this.query = this.location.name;
     });
   }
