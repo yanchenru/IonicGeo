@@ -30,6 +30,11 @@ export class HomePage {
   autocompleteService: any;
   placesService: any;
 
+  startDate = new Date().toISOString().substr(0,10);
+  endDate = new Date().toISOString().substr(0,10);
+  startTime = new Date().toISOString().substr(11,5); 
+  endTime = new Date().toISOString().substr(11,5);
+
   constructor(public navCtrl: NavController, public events: Events, private formBuilder: FormBuilder,
     private toastCtrl: ToastController, private geolocation: Geolocation) {
       
@@ -44,7 +49,7 @@ export class HomePage {
 
     events.subscribe('event:created', (eventDuration, time) => {
       console.log('Event is created:', eventDuration, 'at', new Date(time));
-      this.presentToast('Event is created at ' + new Date(time))
+      //this.presentToast('Event is created at ' + new Date(time))
     });
   }
 
@@ -112,19 +117,19 @@ export class HomePage {
     });
   }
 
-  presentToast(m) {
-    let toast = this.toastCtrl.create({
-      message: m,
-      duration: 3000,
-      position: 'top'
-    });
+  // presentToast(m) {
+  //   let toast = this.toastCtrl.create({
+  //     message: m,
+  //     duration: 10000,
+  //     position: 'top'
+  //   });
 
-    toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
-    });
+  //   toast.onDidDismiss(() => {
+  //     console.log('Dismissed toast');
+  //   });
 
-    toast.present();
-  }
+  //   toast.present();
+  // }
 
   searchPlace() {
     this.autocompleteService = new google.maps.places.AutocompleteService();

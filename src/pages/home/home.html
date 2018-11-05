@@ -11,25 +11,25 @@
         <ion-label>
           <ion-icon name="calendar"></ion-icon> Start Date:
         </ion-label>
-        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventStartDate" min="2000" max="2050" color="dark"></ion-datetime>
+        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventStartDate" [(ngModel)]="startDate" min="2000" max="2050" color="dark"></ion-datetime>
       </ion-item>
       <ion-item class="datetime-custom">
         <ion-label>
           <ion-icon name="calendar"></ion-icon> End Date:
         </ion-label>
-        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventEndDate" min="2000" max="2050" color="dark"></ion-datetime>
+        <ion-datetime displayFormat="MMM-DD-YYYY" formControlName="pickEventEndDate" [(ngModel)]="endDate" min="2000" max="2050" color="dark"></ion-datetime>
       </ion-item>
       <ion-item id="timeStart" class="datetime-custom">
         <ion-label>
           <ion-icon name="time"></ion-icon> Start Time:
         </ion-label>
-        <ion-datetime displayFormat="h:mm A" formControlName="pickEventStartTime"></ion-datetime>
+        <ion-datetime displayFormat="h:mm A" formControlName="pickEventStartTime" [(ngModel)]="startTime"></ion-datetime>
       </ion-item>
       <ion-item id="timeFinish" class="datetime-custom">
         <ion-label>
           <ion-icon name="time"></ion-icon> End Time:
         </ion-label>
-        <ion-datetime displayFormat="h:mm A" formControlName="pickEventEndTime"></ion-datetime>
+        <ion-datetime displayFormat="h:mm A" formControlName="pickEventEndTime" [(ngModel)]="endTime"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label>
