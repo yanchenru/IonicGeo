@@ -75,7 +75,7 @@ export class MyApp {
       latitude: lat,
       longitude: lng,
       radius: parseInt(prox),
-      transitionType: 3,
+      transitionType: 1,
       notification: {
         id: idx,
         title: 'You crossed ' + place,
@@ -88,5 +88,10 @@ export class MyApp {
       () => console.log('Geofence added'),
       (err) => console.log('Geofence failed to add')
     );
+
+    this.geofence.onTransitionReceived().subscribe(resp => {
+      console.log('enter event zone');
+      
+    });
   }
  }
