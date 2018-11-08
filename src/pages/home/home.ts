@@ -115,6 +115,8 @@ export class HomePage {
       endTime: this.eventForm.value.pickEventEndTime,
       description: this.location.description
     });
+
+    this.events.publish('create');
   }
 
   // presentToast(m) {

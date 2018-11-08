@@ -8,6 +8,7 @@ import firebase from 'firebase';
 import { Geofence } from '@ionic-native/geofence';
 import { ToastController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
+import { Geolocation } from '@ionic-native/geolocation';
 
 var config = {
   apiKey: "AIzaSyBf9TgCufrwNYEfPJ6fShLGeMnnFK1hSIM",
@@ -17,26 +18,47 @@ var config = {
   storageBucket: "ionic-214905.appspot.com",
   messagingSenderId: "121679175196"
 };
-
+var nid = 0;
+declare var google;
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
   rootPage: any = TabsPage;
+  map: any;
+  latphone: any;
+  lngphone: any;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private geofence: Geofence,
-    private toastCtrl: ToastController, private alertCtrl: AlertController) {          
-    geofence.initialize().then(
-      // resolved promise does not return a value
-      () => console.log('Geofence Plugin Ready'),
-      (err) => console.log(err)
-    )
-
+    private toastCtrl: ToastController, private alertCtrl: AlertController, private geolocation: Geolocation) {          
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+
+      geofence.initialize().then(
+        // resolved promise does not return a value
+        () => console.log('Geofence Plugin Ready'),
+        (err) => console.log(err)
+      )
+
+      geolocation.getCurrentPosition().then((position) => {
+        let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  console.log(position.coords.latitude);
+  this.latphone = position.coords.latitude;
+  this.lngphone = position.coords.longitude;
+
+        let mapOptions = {
+          center: latLng,
+          zoom: 15,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+  
+        this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
     });
     
     firebase.initializeApp(config);
@@ -66,12 +88,20 @@ export class MyApp {
         let name = childData.name;
         let description = childData.description;
 
-        self.addGeofence(id, 1, lat, lng, name, description, proximity, startDate, endDate);
+        self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
+
+        let p = 0.017453292519943295;    // Math.PI / 180
+        let c = Math.cos;
+        let a = 0.5 - c((lat-self.latphone) * p) / 2 + c(self.latphone * p) *c((lat) * p) * (1 - c(((lng- self.lngphone) * p))) / 2;
+        let dis = (12742 * Math.asin(Math.sqrt(a))); // 2 * R; R = 6371 km
+        console.log(dis);
       });
     });
   }
   
-  addGeofence(id, idx, lat, lng, place, desc, prox, startDate, endDate) {
+  addGeofence(id, lat, lng, place, desc, prox, startDate, endDate) {
+    debugger; 
+    nid = nid+1;
     let fence = {
       id: id,
       latitude: lat,
@@ -79,15 +109,16 @@ export class MyApp {
       radius: parseInt(prox),
       transitionType: 3,
       notification: {
-        id: idx,
+        id: nid,
         title: 'You crossed ' + place,
         text: desc,
-        openAppOnClick: true
+        openAppOnClick: true,
+        data: nid
       }
     }
 
     this.geofence.addOrUpdate(fence).then(
-      () => console.log('Geofence added'),
+      () => {console.log('Geofence added')},
       (err) => console.log('Geofence failed to add')
     );
 
