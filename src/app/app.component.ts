@@ -11,7 +11,7 @@ import { AlertController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
 
-var config = {
+var fbconfig = {
   apiKey: "AIzaSyBf9TgCufrwNYEfPJ6fShLGeMnnFK1hSIM",
   authDomain: "ionic-214905.firebaseapp.com",
   databaseURL: "https://ionic-214905.firebaseio.com",
@@ -29,81 +29,24 @@ export class MyApp {
   map: any;
   latphone: any;
   lngphone: any;
-
-  latbg: any;
-  lngbg: any;
   events: any;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private geofence: Geofence,
     private toastCtrl: ToastController, private alertCtrl: AlertController, private geolocation: Geolocation,
     private bgGeolocation: BackgroundGeolocation) {
+
+    var self = this;
+
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
 
-      geofence.initialize().then(
-        // resolved promise does not return a value
-        () => console.log('Geofence Plugin Ready'),
-        (err) => console.log(err)
-      )
-
-
-      const config: BackgroundGeolocationConfig = {
-        desiredAccuracy: 10,
-        stationaryRadius: 5,
-        distanceFilter: 5,
-        debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-        stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-      };
-
-      this.bgGeolocation.configure(config).subscribe((location: BackgroundGeolocationResponse) => {
-        console.log('BackgroundGeolocation:  ' + location.latitude + ',' + location.longitude);
-        this.latbg = location.latitude;
-        this.lngbg = location.longitude;
-        // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-        // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-        // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-        //this.bgGeolocation.finish(); // FOR IOS ONLY
-
-        var self = this;
-        if (this.events != null) {
-          this.events.forEach(function (event) {
-            let bgdis = self.calculateDistance(event.latitude, self.latbg, event.longitude, self.lngbg);
-            console.log('back ' + bgdis);
-            if (bgdis < 20) {
-              console.log('background track, enter event zone');
-              //self.presentToast(name, startDate, endDate);
-            }
-          })
-        }
-      });
-
-      this.bgGeolocation.start();
-
-
-      geolocation.getCurrentPosition().then((position) => {
-        let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        console.log('front ' + position.coords.latitude + ',' + position.coords.longitude);
-        this.latphone = position.coords.latitude;
-        this.lngphone = position.coords.longitude;
-
-        let mapOptions = {
-          center: latLng,
-          zoom: 15,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        }
-
-        this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
-      }).catch((error) => {
-        console.log('Error getting location', error);
-      });
     });
 
-    firebase.initializeApp(config);
+    firebase.initializeApp(fbconfig);
 
-    var self = this;
     var eventRef = firebase.database().ref('event/');
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
@@ -134,13 +77,81 @@ export class MyApp {
         let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
         console.log('front ' + fdis);
 
-        let bgdis = self.calculateDistance(lat, self.latbg, lng, self.lngbg);
-        console.log('back ' + bgdis);
-        if (bgdis < 20) {
-          console.log('background track, enter event zone');
-          self.presentToast(name, startDate, endDate);
-        }
+        // let bgdis = self.calculateDistance(lat, self.latbg, lng, self.lngbg);
+        // console.log('back ' + bgdis);
+        // if (bgdis < 20) {
+        //   console.log('background track, enter event zone');
+        //   self.presentToast(name, startDate, endDate);
+        // }
       });
+    });
+
+
+    geofence.initialize().then(
+      // resolved promise does not return a value
+      () => console.log('Geofence Plugin Ready'),
+      (err) => console.log(err)
+    )
+
+
+    const bgconfig: BackgroundGeolocationConfig = {
+      desiredAccuracy: 0,
+      stationaryRadius: 1,
+      distanceFilter: 1,
+      debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+      stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+      // locationProvider: 1,
+      // interval: 1000,
+      // fastestInterval: 1000,
+    };
+
+
+    var preDis = {};
+    bgGeolocation.configure(bgconfig).subscribe((location: BackgroundGeolocationResponse) => {
+      // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
+      // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
+      // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
+      //this.bgGeolocation.finish(); // FOR IOS ONLY
+      //debugger;
+      console.log('BackgroundGeolocation:  ' + location.latitude + ',' + location.longitude);
+
+      if (self.events != null) {
+        self.events.forEach(function (event) {
+          let bgDis = self.calculateDistance(event.val().latitude, location.latitude, event.val().longitude, location.longitude);
+
+          console.log('back distance: ' + bgDis);
+          //debugger;
+          if (preDis[event.val().id] == null) {
+            preDis[event.val().id] = 20;
+          }
+          //alert('bg' + bgDis);
+          if (bgDis < 6 && preDis[event.val().id] >= 6) {
+            console.log('background track, enter event zone');
+            self.presentToast(event.val().name, event.val().startDate);
+          }
+          preDis[event.val().id] = bgDis;
+        })
+      }
+    });
+
+    this.bgGeolocation.start();
+
+
+    geolocation.getCurrentPosition().then((position) => {
+      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      console.log('front ' + position.coords.latitude + ',' + position.coords.longitude);
+      this.latphone = position.coords.latitude;
+      this.lngphone = position.coords.longitude;
+
+      let mapOptions = {
+        center: latLng,
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      }
+
+      this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
+    }).catch((error) => {
+      console.log('Error getting location', error);
     });
   }
 
@@ -150,15 +161,13 @@ export class MyApp {
     let a = 0.5 - c((lat1 - lat2) * p) / 2 + c(lat2 * p) * c((lat1) * p) * (1 - c(((lng1 - lng2) * p))) / 2;
     let dis = (12742 * Math.asin(Math.sqrt(a))); // 2 * R; R = 6371 km
 
-    return dis;
+    return dis * 1000;
   }
 
   addGeofence(id, lat, lng, place, desc, prox, startDate, endDate) {
-    //debugger;
-
     this.geofence.onTransitionReceived().subscribe(resp => {
       console.log('enter event zone');
-      this.presentToast(place, startDate, endDate);
+      this.presentToast(place, startDate);
     });
 
     //nid = nid + 1;
@@ -185,9 +194,9 @@ export class MyApp {
 
   }
 
-  presentToast(place, startDate, endDate) {
+  presentToast(place, startDate) {
     let toast = this.toastCtrl.create({
-      message: 'Event at ' + place + ', from ' + startDate + ' to ' + endDate,
+      message: 'Event at ' + place + ', on ' + startDate,
       duration: 10000,
       position: 'top',
       showCloseButton: true,
