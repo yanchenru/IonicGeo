@@ -19,7 +19,7 @@ var fbconfig = {
   storageBucket: "ionic-214905.appspot.com",
   messagingSenderId: "121679175196"
 };
-//var nid = 0;
+
 declare var google;
 @Component({
   templateUrl: 'app.html'
@@ -38,8 +38,6 @@ export class MyApp {
     var self = this;
 
     platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
 
@@ -51,20 +49,10 @@ export class MyApp {
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
       snapshot.forEach(function (childSnapshot) {
-        // var childKey = childSnapshot.key;
         var childData = childSnapshot.val();
 
-        // let currentDate = new Date();
         let startDate = new Date(childData.startDate + ' ' + childData.startTime);
         let endDate = new Date(childData.endDate + ' ' + childData.endTime);
-        // console.log(currentDate);
-        // console.log(startDate);
-        // console.log(endDate);
-        // if (currentDate >= startDate && currentDate <= endDate) {
-        //   if (true) {
-        //     console.log('good');
-        //   }
-        // }
         let proximity = childData.proximity;
         let lat = childData.latitude;
         let lng = childData.longitude;
@@ -73,22 +61,13 @@ export class MyApp {
         let description = childData.description;
 
         self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
-        //debugger;
         let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
         console.log('front ' + fdis);
-
-        // let bgdis = self.calculateDistance(lat, self.latbg, lng, self.lngbg);
-        // console.log('back ' + bgdis);
-        // if (bgdis < 20) {
-        //   console.log('background track, enter event zone');
-        //   self.presentToast(name, startDate, endDate);
-        // }
       });
     });
 
 
     geofence.initialize().then(
-      // resolved promise does not return a value
       () => console.log('Geofence Plugin Ready'),
       (err) => console.log(err)
     )
@@ -120,11 +99,9 @@ export class MyApp {
           let bgDis = self.calculateDistance(event.val().latitude, location.latitude, event.val().longitude, location.longitude);
 
           console.log('back distance: ' + bgDis);
-          //debugger;
           if (preDis[event.val().id] == null) {
             preDis[event.val().id] = 20;
           }
-          //alert('bg' + bgDis);
           if (bgDis < 6 && preDis[event.val().id] >= 6) {
             console.log('background track, enter event zone');
             self.presentToast(event.val().name, event.val().startDate);
@@ -170,7 +147,6 @@ export class MyApp {
       this.presentToast(place, startDate);
     });
 
-    //nid = nid + 1;
     let fence = {
       id: id,
       latitude: lat,

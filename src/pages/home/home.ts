@@ -49,7 +49,6 @@ export class HomePage {
 
     events.subscribe('event:created', (eventDuration, time) => {
       console.log('Event is created:', eventDuration, 'at', new Date(time));
-      //this.presentToast('Event is created at ' + new Date(time))
     });
   }
 
