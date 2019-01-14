@@ -80,10 +80,6 @@
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
-    <plugin name="cordova-plugin-geofence" spec="^0.7.0">
-        <variable name="GEOFENCE_ALWAYS_USAGE_DESCRIPTION" value="${EXECUTABLE_NAME} Would Like to Use Your Current Location Even In Background." />
-        <variable name="GEOFENCE_IN_USE_USAGE_DESCRIPTION" value="${EXECUTABLE_NAME} Would Like to Use Your Current Location When In Use." />
-    </plugin>
     <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
@@ -101,6 +97,10 @@
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
         <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app always requires location tracking" />
     </plugin>
+    <plugin name="cordova-plugin-geofence" spec="^0.7.0">
+        <variable name="GEOFENCE_ALWAYS_USAGE_DESCRIPTION" value="${EXECUTABLE_NAME} Would Like to Use Your Current Location Even In Background." />
+        <variable name="GEOFENCE_IN_USE_USAGE_DESCRIPTION" value="${EXECUTABLE_NAME} Would Like to Use Your Current Location When In Use." />
+    </plugin>
     <engine name="ios" spec="4.5.5" />
-    <engine name="android" spec="6.3.0" />
+    <engine name="android" spec="^7.1.4" />
 </widget>
