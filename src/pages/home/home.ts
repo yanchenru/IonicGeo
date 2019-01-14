@@ -65,7 +65,6 @@ export class HomePage {
     });
 
     ps.on('change', (e) => {
-      console.log(e);
       this.location.name = e.result.name;
       this.location.lat = e.result.latlng.lat;
       this.location.lng = e.result.latlng.lng;
