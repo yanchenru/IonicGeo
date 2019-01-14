@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import firebase from 'firebase';
 
 declare var placeSearch;
-
+//test
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
