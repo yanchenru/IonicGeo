@@ -35,11 +35,13 @@
         <ion-label>
           <ion-icon name="pin"></ion-icon> Address:
         </ion-label>
-        <ion-input type="text" formControlName="address" [(ngModel)]="query" (input)="searchPlace()"></ion-input>
+        <!-- <ion-input type="text" formControlName="address" [(ngModel)]="query" (input)="searchPlace()"></ion-input> -->
+        
       </ion-item>
-      <ion-list>
+      <input type="search" id="place-search-input" formControlName="address" [(ngModel)]="ngAddress" placeholder="Start Searching..."/>
+      <!-- <ion-list> 
         <ion-item *ngFor="let place of places" (click)="selectPlace(place)">{{place.description}}</ion-item>
-      </ion-list>
+      </ion-list> -->
       <ion-item>
         <ion-label>
           <ion-icon name="logo-buffer"></ion-icon> Proximity(Feet):

@@ -21,6 +21,7 @@ var fbconfig = {
 };
 
 declare var google;
+
 @Component({
   templateUrl: 'app.html'
 })
