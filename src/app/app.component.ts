@@ -25,9 +25,9 @@ var fbconfig = {
 })
 export class MyApp {
   rootPage: any = TabsPage;
-  map: any;
-  latphone: any;
-  lngphone: any;
+  // map: any;
+  // latphone: any;
+  // lngphone: any;
   events: any;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController,
@@ -46,22 +46,21 @@ export class MyApp {
     var eventRef = firebase.database().ref('event/');
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
-      snapshot.forEach(function (childSnapshot) {
-        var childData = childSnapshot.val();
+      // snapshot.forEach(function (childSnapshot) {
+      //   var childData = childSnapshot.val();
 
-        let startDate = new Date(childData.startDate + ' ' + childData.startTime);
-        let endDate = new Date(childData.endDate + ' ' + childData.endTime);
-        let proximity = childData.proximity;
-        let lat = childData.latitude;
-        let lng = childData.longitude;
-        let id = childData.id;
-        let name = childData.name;
-        let description = childData.description;
+      //   let startDate = new Date(childData.startDate + ' ' + childData.startTime);
+      //   let endDate = new Date(childData.endDate + ' ' + childData.endTime);
+      //   let proximity = childData.proximity;
+      //   let lat = childData.latitude;
+      //   let lng = childData.longitude;
+      //   let id = childData.id;
+      //   let name = childData.name;
+      //   let description = childData.description;
 
-        //self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
-        let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
-        console.log('front ' + fdis);
-      });
+      //   let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
+      //   console.log('front ' + fdis);
+      // });
     });
 
     const bgconfig: BackgroundGeolocationConfig = {
