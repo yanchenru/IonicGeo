@@ -5,10 +5,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { TabsPage } from '../pages/tabs/tabs';
 import firebase from 'firebase';
-import { Geofence } from '@ionic-native/geofence';
 import { ToastController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
-import { Geolocation } from '@ionic-native/geolocation';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
 
 var fbconfig = {
@@ -20,7 +18,7 @@ var fbconfig = {
   messagingSenderId: "121679175196"
 };
 
-declare var google;
+//declare var google;
 
 @Component({
   templateUrl: 'app.html'
@@ -32,17 +30,16 @@ export class MyApp {
   lngphone: any;
   events: any;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private geofence: Geofence,
-    private toastCtrl: ToastController, private alertCtrl: AlertController, private geolocation: Geolocation,
-    private bgGeolocation: BackgroundGeolocation) {
-
-    var self = this;
-
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController,
+    private alertCtrl: AlertController, private geolocation: Geolocation, private bgGeolocation: BackgroundGeolocation) {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
-
     });
+  }
+
+  ngOnInit() {
+    var self = this;
 
     firebase.initializeApp(fbconfig);
 
@@ -61,18 +58,11 @@ export class MyApp {
         let name = childData.name;
         let description = childData.description;
 
-        self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
+        //self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
         let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
         console.log('front ' + fdis);
       });
     });
-
-
-    geofence.initialize().then(
-      () => console.log('Geofence Plugin Ready'),
-      (err) => console.log(err)
-    )
-
 
     const bgconfig: BackgroundGeolocationConfig = {
       desiredAccuracy: 0,
@@ -87,7 +77,7 @@ export class MyApp {
 
 
     var preDis = {};
-    bgGeolocation.configure(bgconfig).subscribe((location: BackgroundGeolocationResponse) => {
+    this.bgGeolocation.configure(bgconfig).subscribe((location: BackgroundGeolocationResponse) => {
       // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
       // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
       // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
@@ -115,22 +105,6 @@ export class MyApp {
     this.bgGeolocation.start();
 
 
-    geolocation.getCurrentPosition().then((position) => {
-      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      console.log('front ' + position.coords.latitude + ',' + position.coords.longitude);
-      this.latphone = position.coords.latitude;
-      this.lngphone = position.coords.longitude;
-
-      let mapOptions = {
-        center: latLng,
-        zoom: 15,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
-
-      this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
-    }).catch((error) => {
-      console.log('Error getting location', error);
-    });
   }
 
   calculateDistance(lat1, lat2, lng1, lng2) {
@@ -140,35 +114,6 @@ export class MyApp {
     let dis = (12742 * Math.asin(Math.sqrt(a))); // 2 * R; R = 6371 km
 
     return dis * 1000;
-  }
-
-  addGeofence(id, lat, lng, place, desc, prox, startDate, endDate) {
-    this.geofence.onTransitionReceived().subscribe(resp => {
-      console.log('enter event zone');
-      this.presentToast(place, startDate);
-    });
-
-    let fence = {
-      id: id,
-      latitude: lat,
-      longitude: lng,
-      radius: parseInt(prox),
-      transitionType: 3,
-      notification: {
-        //id: nid,
-        //title: 'You crossed ' + place,
-        text: desc,
-        openAppOnClick: false,
-        autoClear: true
-        //data: nid
-      }
-    }
-
-    this.geofence.addOrUpdate(fence).then(
-      () => { console.log('Geofence added') },
-      (err) => console.log('Geofence failed to add')
-    );
-
   }
 
   presentToast(place, startDate) {
