@@ -5,7 +5,6 @@ import { NgZone } from '@angular/core';
 import firebase from 'firebase';
 
 declare var google;
-//declare var placeSearch;
 
 @Component({
   selector: 'page-home',

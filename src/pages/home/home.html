@@ -35,7 +35,7 @@
         <ion-label>
           <ion-icon name="pin"></ion-icon> Address:
         </ion-label>
-        <ion-input [(ngModel)]="autocomplete.input" formControlName="address" (input)="updateSearchResults()"></ion-input>
+        <ion-input [(ngModel)]="autocomplete.input" formControlName="address" (input)="updateSearchResults()" clearInput></ion-input>
       </ion-item>
       <ion-list [hidden]="autocompleteItems.length == 0">
         <ion-item *ngFor="let item of autocompleteItems" tappable (click)="selectSearchResult(item)">
