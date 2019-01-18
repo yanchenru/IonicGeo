@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgZone } from '@angular/core';
 import firebase from 'firebase';
 
-declare var placeSearch;
+declare var google;
+//declare var placeSearch;
 
 @Component({
   selector: 'page-home',
@@ -18,12 +20,16 @@ export class HomePage {
     name: null,
   };
 
+  GoogleAutocomplete: any;
+  autocomplete: any;
+  autocompleteItems: any;
+
   startDate = new Date().toISOString().substr(0, 10);
   endDate = new Date().toISOString().substr(0, 10);
   startTime = new Date().toISOString().substr(11, 5);
   endTime = new Date().toISOString().substr(11, 5);
 
-  constructor(public navCtrl: NavController, private formBuilder: FormBuilder) {
+  constructor(public navCtrl: NavController, private formBuilder: FormBuilder, private zone: NgZone) {
     this.eventForm = this.formBuilder.group({
       pickEventStartDate: ['', Validators.required],
       pickEventEndDate: ['', Validators.required],
@@ -32,6 +38,10 @@ export class HomePage {
       address: ['', Validators.required],
       proximity: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]*$')])],
     }, { validator: this.dateLessThan("pickEventStartDate", "pickEventEndDate", "pickEventStartTime", "pickEventEndTime") });
+    
+    this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
+    this.autocomplete = { input: '' };
+    this.autocompleteItems = [];
   }
 
   dateLessThan(startDate: string, endDate: string, startTime: string, finishTime: string) {
@@ -56,19 +66,25 @@ export class HomePage {
     }
   }
 
-  ionViewDidLoad() {
-    //MapQuest PlaceSearch API
-    let ps = placeSearch({
-      key: 'TAal4gqFwLARLZi5EtdG5oBfs8D69Tyq',
-      container: document.querySelector('#place-search-input'),
-      //default: false
-    });
+  updateSearchResults() {
+    if (this.autocomplete.input == '') {
+      this.autocompleteItems = [];
+      return;
+    }
+    this.GoogleAutocomplete.getPlacePredictions({ input: this.autocomplete.input },
+      (predictions, status) => {
+        this.autocompleteItems = [];
+        this.zone.run(() => {
+          predictions.forEach((prediction) => {
+            this.autocompleteItems.push(prediction);
+          });
+        });
+      });
+  }
 
-    ps.on('change', (e) => {
-      this.location.name = e.result.name;
-      this.location.lat = e.result.latlng.lat;
-      this.location.lng = e.result.latlng.lng;
-    })
+  selectSearchResult(item){
+    this.autocompleteItems = [];
+    this.autocomplete.input = item.description;
   }
 
   create() {
