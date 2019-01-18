@@ -31,7 +31,7 @@ export class MyApp {
   events: any;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController,
-    private alertCtrl: AlertController, private geolocation: Geolocation, private bgGeolocation: BackgroundGeolocation) {
+    private alertCtrl: AlertController, private bgGeolocation: BackgroundGeolocation) {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
@@ -40,40 +40,28 @@ export class MyApp {
 
   ngOnInit() {
     var self = this;
-
+    
     firebase.initializeApp(fbconfig);
 
     var eventRef = firebase.database().ref('event/');
+    eventRef.once('value').then(function(snapshot){
+      self.events = snapshot;
+    })
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
-      // snapshot.forEach(function (childSnapshot) {
-      //   var childData = childSnapshot.val();
-
-      //   let startDate = new Date(childData.startDate + ' ' + childData.startTime);
-      //   let endDate = new Date(childData.endDate + ' ' + childData.endTime);
-      //   let proximity = childData.proximity;
-      //   let lat = childData.latitude;
-      //   let lng = childData.longitude;
-      //   let id = childData.id;
-      //   let name = childData.name;
-      //   let description = childData.description;
-
-      //   let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
-      //   console.log('front ' + fdis);
-      // });
     });
 
     const bgconfig: BackgroundGeolocationConfig = {
       desiredAccuracy: 0,
-      stationaryRadius: 1,
-      distanceFilter: 1,
+      stationaryRadius: 0,
+      distanceFilter: 0,
       debug: true, //  enable this hear sounds for background-geolocation life-cycle.
-      stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-      // locationProvider: 1,
-      // interval: 1000,
-      // fastestInterval: 1000,
+      //stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+      locationProvider: 1,
+      interval: 2000,
+      fastestInterval: 1000,
+      //startForeground: true,
     };
-
 
     var preDis = {};
     this.bgGeolocation.configure(bgconfig).subscribe((location: BackgroundGeolocationResponse) => {
@@ -81,29 +69,27 @@ export class MyApp {
       // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
       // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
       //this.bgGeolocation.finish(); // FOR IOS ONLY
-      //debugger;
-      console.log('BackgroundGeolocation:  ' + location.latitude + ',' + location.longitude);
-
-      if (self.events != null) {
+      
+      //console.log('BackgroundGeolocation:  ' + location.latitude + ',' + location.longitude);
+      if (self.events != null && self.events != undefined) {
         self.events.forEach(function (event) {
-          let bgDis = self.calculateDistance(event.val().latitude, location.latitude, event.val().longitude, location.longitude);
+          let distance = self.calculateDistance(event.val().latitude, location.latitude, event.val().longitude, location.longitude);
 
-          console.log('back distance: ' + bgDis);
-          if (preDis[event.val().id] == null) {
-            preDis[event.val().id] = 20;
+          //console.log('distance: ' + distance);
+
+          if (preDis[event.val().name] == null) {
+            preDis[event.val().name] = 20;
           }
-          if (bgDis < 6 && preDis[event.val().id] >= 6) {
+          if (distance < 20 && preDis[event.val().name] >= 20) {
             console.log('background track, enter event zone');
             self.presentToast(event.val().name, event.val().startDate);
           }
-          preDis[event.val().id] = bgDis;
+          preDis[event.val().name] = distance;
         })
       }
     });
 
     this.bgGeolocation.start();
-
-
   }
 
   calculateDistance(lat1, lat2, lng1, lng2) {

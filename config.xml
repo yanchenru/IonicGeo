@@ -90,8 +90,6 @@
     <plugin name="cordova-plugin-ionic-webview" spec="^2.1.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.1.2" />
     <plugin name="cordova-plugin-statusbar" spec="^2.4.2" />
-    <engine name="ios" spec="4.5.5" />
-    <engine name="android" spec="6.3.0" />
     <plugin name="cordova-plugin-mauron85-background-geolocation" spec="2.3.6">
         <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="11+" />
         <variable name="ANDROID_SUPPORT_LIBRARY_VERSION" value="23+" />
@@ -103,4 +101,6 @@
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
         <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app always requires location tracking" />
     </plugin>
+    <engine name="ios" spec="4.5.5" />
+    <engine name="android" spec="^7.1.4" />
 </widget>
