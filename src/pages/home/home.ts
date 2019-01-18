@@ -37,7 +37,7 @@ export class HomePage {
       address: ['', Validators.required],
       proximity: ['', Validators.compose([Validators.required, Validators.pattern('^[0-9]*$')])],
     }, { validator: this.dateLessThan("pickEventStartDate", "pickEventEndDate", "pickEventStartTime", "pickEventEndTime") });
-    
+
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
     this.autocompleteItems = [];
@@ -70,18 +70,19 @@ export class HomePage {
       this.autocompleteItems = [];
       return;
     }
-    this.GoogleAutocomplete.getPlacePredictions({ input: this.autocomplete.input },
-      (predictions, status) => {
+    this.GoogleAutocomplete.getPlacePredictions({ input: this.autocomplete.input }, (predictions, status) => {
+      if (status == google.maps.places.PlacesServiceStatus.OK && predictions) {
         this.autocompleteItems = [];
         this.zone.run(() => {
           predictions.forEach((prediction) => {
             this.autocompleteItems.push(prediction);
           });
         });
-      });
+      }
+    });
   }
 
-  selectSearchResult(item){
+  selectSearchResult(item) {
     this.autocompleteItems = [];
     this.autocomplete.input = item.description;
   }
