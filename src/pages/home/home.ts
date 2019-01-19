@@ -22,6 +22,7 @@ export class HomePage {
   GoogleAutocomplete: any;
   autocomplete: any;
   autocompleteItems: any;
+  GoogleGeocoder: any;
 
   startDate = new Date().toISOString().substr(0, 10);
   endDate = new Date().toISOString().substr(0, 10);
@@ -41,6 +42,7 @@ export class HomePage {
     this.GoogleAutocomplete = new google.maps.places.AutocompleteService();
     this.autocomplete = { input: '' };
     this.autocompleteItems = [];
+    this.GoogleGeocoder = new google.maps.Geocoder();
   }
 
   dateLessThan(startDate: string, endDate: string, startTime: string, finishTime: string) {
@@ -85,6 +87,14 @@ export class HomePage {
   selectSearchResult(item) {
     this.autocompleteItems = [];
     this.autocomplete.input = item.description;
+
+    this.GoogleGeocoder.geocode({ 'placeId': item.place_id }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        this.location.lat = results[0].geometry.location.lat();
+        this.location.lng = results[0].geometry.location.lng();
+        this.location.name = results[0].formatted_address;
+      }
+    })
   }
 
   create() {
