@@ -11,10 +11,8 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
-//import { DatePicker } from '@ionic-native/date-picker';
 import { Geolocation } from '@ionic-native/geolocation';
-import { Geofence } from '@ionic-native/geofence';
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { BackgroundMode } from '@ionic-native/background-mode';
 
 @NgModule({
   declarations: [
@@ -39,10 +37,8 @@ import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
   providers: [
     StatusBar,
     SplashScreen,
-    //DatePicker,
     Geolocation,
-    Geofence,
-    BackgroundGeolocation,
+    BackgroundMode,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })

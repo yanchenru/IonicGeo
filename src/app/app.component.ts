@@ -4,12 +4,11 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { TabsPage } from '../pages/tabs/tabs';
-import firebase from 'firebase';
-//import { Geofence } from '@ionic-native/geofence';
 import { ToastController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
-//import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
+import { BackgroundMode } from '@ionic-native/background-mode';
+import firebase from 'firebase';
 
 var fbconfig = {
   apiKey: "AIzaSyBf9TgCufrwNYEfPJ6fShLGeMnnFK1hSIM",
@@ -20,65 +19,47 @@ var fbconfig = {
   messagingSenderId: "121679175196"
 };
 
-declare var google;
-
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp {
   rootPage: any = TabsPage;
-  map: any;
-  latphone: any;
-  lngphone: any;
+
   events: any;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController, 
-    private alertCtrl: AlertController, private geolocation: Geolocation) {
-
-    var self = this;
-
+    private alertCtrl: AlertController, private geolocation: Geolocation, private backgroundMode: BackgroundMode) {
     platform.ready().then(() => {
       statusBar.styleDefault();
       splashScreen.hide();
 
+      this.backgroundMode.enable();
+      this.readFirebase();
+      this.pushNotification();
     });
+  }
+
+  readFirebase(){
+    var self = this;
 
     firebase.initializeApp(fbconfig);
 
     var eventRef = firebase.database().ref('event/');
+    eventRef.once('value').then(function(snapshot){
+      self.events = snapshot;
+    })
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
-      snapshot.forEach(function (childSnapshot) {
-        var childData = childSnapshot.val();
-
-        let startDate = new Date(childData.startDate + ' ' + childData.startTime);
-        let endDate = new Date(childData.endDate + ' ' + childData.endTime);
-        let proximity = childData.proximity;
-        let lat = childData.latitude;
-        let lng = childData.longitude;
-        let id = childData.id;
-        let name = childData.name;
-        let description = childData.description;
-
-        //self.addGeofence(id, lat, lng, name, description, proximity, startDate, endDate);
-        let fdis = self.calculateDistance(lat, self.latphone, lng, self.lngphone);
-        console.log('front ' + fdis);
-      });
     });
+  }
 
-    geolocation.getCurrentPosition().then((position) => {
-      let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+  pushNotification(){    
+    this.geolocation.getCurrentPosition().then((position) => {
       console.log('front ' + position.coords.latitude + ',' + position.coords.longitude);
-      this.latphone = position.coords.latitude;
-      this.lngphone = position.coords.longitude;
+      let latphone = position.coords.latitude;
+      let lngphone = position.coords.longitude;
 
-      let mapOptions = {
-        center: latLng,
-        zoom: 15,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      }
 
-      this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
     }).catch((error) => {
       console.log('Error getting location', error);
     });

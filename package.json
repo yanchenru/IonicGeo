@@ -21,6 +21,7 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/background-geolocation": "^4.17.0",
+    "@ionic-native/background-mode": "^4.19.0",
     "@ionic-native/core": "~4.11.0",
     "@ionic-native/date-picker": "^4.12.0",
     "@ionic-native/geofence": "^4.17.0",
@@ -34,6 +35,7 @@
     "cordova-browser": "5.0.4",
     "cordova-ios": "4.5.5",
     "cordova-plugin-add-swift-support": "^1.7.2",
+    "cordova-plugin-background-mode": "0.7.2",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-device": "^2.0.2",
@@ -87,7 +89,8 @@
         "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
         "CONTENT_AUTHORITY": "$PACKAGE_NAME",
         "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking"
-      }
+      },
+      "cordova-plugin-background-mode": {}
     },
     "platforms": [
       "ios",
