@@ -27,7 +27,7 @@ export class MyApp {
 
   events: any;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController, 
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private toastCtrl: ToastController,
     private alertCtrl: AlertController, private geolocation: Geolocation, private backgroundMode: BackgroundMode) {
     platform.ready().then(() => {
       statusBar.styleDefault();
@@ -35,33 +35,29 @@ export class MyApp {
 
       this.backgroundMode.enable();
       this.readFirebase();
-      this.pushNotification();
     });
   }
 
-  readFirebase(){
+  readFirebase() {
     var self = this;
 
     firebase.initializeApp(fbconfig);
 
     var eventRef = firebase.database().ref('event/');
-    eventRef.once('value').then(function(snapshot){
+    eventRef.once('value').then(function (snapshot) {
       self.events = snapshot;
+      self.watchPosition();
     })
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
     });
   }
 
-  pushNotification(){    
-    this.geolocation.getCurrentPosition().then((position) => {
-      console.log('front ' + position.coords.latitude + ',' + position.coords.longitude);
-      let latphone = position.coords.latitude;
-      let lngphone = position.coords.longitude;
+  watchPosition() {
+    var self = this;
 
-
-    }).catch((error) => {
-      console.log('Error getting location', error);
+    this.geolocation.watchPosition().subscribe(position => {
+      console.log(position.coords.longitude + ' ' + position.coords.latitude);
     });
   }
 
