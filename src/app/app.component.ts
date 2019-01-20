@@ -46,7 +46,7 @@ export class MyApp {
     var eventRef = firebase.database().ref('event/');
     eventRef.once('value').then(function (snapshot) {
       self.events = snapshot;
-      self.watchPosition();
+      //self.watchPosition();
     })
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;

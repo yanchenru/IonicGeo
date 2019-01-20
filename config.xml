@@ -99,9 +99,9 @@
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
         <variable name="ALWAYS_USAGE_DESCRIPTION" value="This app always requires location tracking" />
     </plugin>
-    <plugin name="cordova-plugin-statusbar" spec="2.4.2" />
     <plugin name="cordova-plugin-background-mode" spec="0.7.2" />
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
+    <plugin name="cordova-plugin-statusbar" spec="2.4.2" />
     <engine name="ios" spec="4.5.5" />
     <engine name="android" spec="7.1.4" />
 </widget>
