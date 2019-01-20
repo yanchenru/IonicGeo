@@ -35,6 +35,7 @@ export class MyApp {
 
       this.backgroundMode.enable();
       this.readFirebase();
+      this.watchPosition();
     });
   }
 
@@ -46,7 +47,7 @@ export class MyApp {
     var eventRef = firebase.database().ref('event/');
     eventRef.once('value').then(function (snapshot) {
       self.events = snapshot;
-      //self.watchPosition();
+      // self.watchPosition();
     })
     eventRef.on('value', function (snapshot) {
       self.events = snapshot;
@@ -55,7 +56,6 @@ export class MyApp {
 
   watchPosition() {
     var self = this;
-
     this.geolocation.watchPosition().subscribe(position => {
       console.log(position.coords.longitude + ' ' + position.coords.latitude);
     });

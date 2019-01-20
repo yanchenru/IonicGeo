@@ -25,7 +25,7 @@
     "@ionic-native/core": "~4.11.0",
     "@ionic-native/date-picker": "^4.12.0",
     "@ionic-native/geofence": "^4.17.0",
-    "@ionic-native/geolocation": "^4.12.0",
+    "@ionic-native/geolocation": "^4.19.0",
     "@ionic-native/splash-screen": "^4.11.0",
     "@ionic-native/status-bar": "^4.19.0",
     "@ionic/lab": "^1.0.8",
@@ -40,7 +40,7 @@
     "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-geofence": "^0.7.0",
-    "cordova-plugin-geolocation": "^4.0.1",
+    "cordova-plugin-geolocation": "4.0.1",
     "cordova-plugin-ionic-keyboard": "^2.1.2",
     "cordova-plugin-ionic-webview": "^2.1.0",
     "cordova-plugin-mauron85-background-geolocation": "^2.3.6",
@@ -66,9 +66,6 @@
   "cordova": {
     "plugins": {
       "cordova-plugin-datepicker": {},
-      "cordova-plugin-geolocation": {
-        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
-      },
       "cordova-plugin-geofence": {
         "GEOFENCE_ALWAYS_USAGE_DESCRIPTION": "${EXECUTABLE_NAME} Would Like to Use Your Current Location Even In Background.",
         "GEOFENCE_IN_USE_USAGE_DESCRIPTION": "${EXECUTABLE_NAME} Would Like to Use Your Current Location When In Use."
@@ -90,7 +87,10 @@
       },
       "cordova-plugin-background-mode": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-statusbar": {}
+      "cordova-plugin-statusbar": {},
+      "cordova-plugin-geolocation": {
+        "GEOLOCATION_USAGE_DESCRIPTION": "To locate you"
+      }
     },
     "platforms": [
       "ios",
